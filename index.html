@@ -257,10 +257,10 @@
                 }
             }
 
-            // 2. Generate High-Grade Core (Exactly 16 connected blocks)
+            // 2. Generate High-Grade Core (Exactly 20 connected blocks)
             let hgCluster = [];
-            let startRow = Math.floor(Math.random() * 3) + 6; // Deep placement (Rows 6-9)
-            let startCol = Math.floor(Math.random() * 8) + 6; 
+            let startRow = Math.floor(Math.random() * 3) + 4; // Deep placement (Rows 4-9)
+            let startCol = Math.floor(Math.random() * 8) + 10; 
             
             gameState[startRow][startCol].type = 'HG';
             gameState[startRow][startCol].baseValue = 170;
@@ -536,16 +536,16 @@
             }
 
             if (efficiency >= 90) {
-                msgBox.innerText = `🏆 LANE'S CHAMPION! Efficiency: ${efficiency}%. Төлөвлөлтийг хангалттай сайн хийлээ!`;
+                msgBox.innerText = `🏆 LANE АВАРГА! Efficiency: ${efficiency}%. Төлөвлөлтийг хангалттай сайн хийлээ!`;
                 msgBox.style.color = "#66bb6a";
             } else if (efficiency >= 70) {
-                msgBox.innerText = `👍 DECENT SEQUENCE. Efficiency: ${efficiency}%. Эхний жилүүдэд ядуу хүдэр дээр төвлөрснөөр баян агуулгатай хүдэр олборлолт цөөн жилээр хойшилсон байна.`;
+                msgBox.innerText = `👍 ХАНГАЛТТАЙ САЙН. Efficiency: ${efficiency}%. Эхний жилүүдэд ядуу хүдэр дээр төвлөрснөөр баян агуулгатай хүдэр олборлолт цөөн жилээр хойшилсон байна.`;
                 msgBox.style.color = "#81c784";
             } else if (efficiency >= 45) {
-                msgBox.innerText = `⚠️ PRODUCTION DELAY. Efficiency: ${efficiency}%. Дискаунтын улмаас гүнд буй баян хүдрийн үнэ цэнэ унасан байна.`;
+                msgBox.innerText = `⚠️ ОЛБОРЛОЛТ ОРОЙТСОН. Efficiency: ${efficiency}%. Дискаунтын улмаас гүнд буй баян хүдрийн үнэ цэнэ унасан байна.`;
                 msgBox.style.color = "#ffb74d";
             } else {
-                msgBox.innerText = `🛑 ASSET DEPRECIATION. Efficiency: ${efficiency}%. Цаг хугацааны явцад нөөцийн үнэ цэнэ бүрэн алдагдлаа.`;
+                msgBox.innerText = `🛑 ОРД ҮНЭГҮЙДСЭН. Efficiency: ${efficiency}%. Цаг хугацааны явцад нөөцийн үнэ цэнэ бүрэн алдагдлаа.`;
                 msgBox.style.color = "#e57373";
             }
         }

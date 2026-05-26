@@ -2,8 +2,9 @@
 <html lang="mn">
 <head>
     <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Level 2: Lane's Throughput Optimization (20 Blocks/Yr)</title>
+    <title>Level 2: Lane's Throughput Optimization</title>
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -176,6 +177,20 @@
             font-size: 0.9em;
             line-height: 1.4;
             border-left: 5px solid #ffca28;
+            margin-bottom: 30px;
+        }
+
+        /* Styling for your new copyright label */
+        footer {
+            font-size: 0.85em;
+            color: #6e6e8a;
+            text-align: center;
+            letter-spacing: 0.5px;
+            border-top: 1px solid #2d2d3f;
+            padding-top: 15px;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -206,11 +221,16 @@
     <div class="instructions">
         <strong>Заавар:</strong>
         <ul>
-            <li><strong>Үндсэн зарчим:</strong> Уурхай тогтмол хүчин чадлаар ажиллана. Уурхай <strong>20 блок олборлосноор нэг жил өнгөрнө</strong>. Жил өнгөрөх тусам олборлолтод өртөөгүй байгаа хүдрийн блокуудын үнэ цэнэ 8%-иар хорогдоно.</li>
+            <li><strong>Үндсэн зарчим:</strong> Уурхай тогтмол хүчин чадлаар ажиллана. Уурхай <strong>20 блок олборлосноор нэг жил өнгөрнө</strong>. Жил шинээр гарах бүрд олборлолтод өртөөгүй байгаа хүдрийн блокуудын үнэ цэнэ 8%-иар хорогдоно.</li>
             <li><strong>Оновчлолын даалгавар:</strong> Та жилд 20 блок л олборлоно. Эхний жилүүдэд ядуу хүдэр олборлох тусам олборлолтод өртөхөө хүлээж буй баян блокуудын өнөөгийн үнэ цэнэ унана (NPV). </li>
-            <li><strong>Амжилтад хөтлөх стратеги:</strong> Жилд олборлох 20 блокоо зөв сонго. Ордын гүнд орших баян агуулгатай блокуудыг аль болох эрт олборлохын тулд шаардлагагүй хөрс хуулалт хийхээс зайлсхий. Олборлолтын эхний жилүүдийн мөнгөн урсгалаа аль болох өндөр байлгахыг зорь.</li>
+            <li><strong>Амжилтад хөтлөх стратеги:</strong> Жилд олборлох 20 блокоо зөв сонго. Ордын гүнд орших баян агуулгатай блокуудыг аль болох эрт олборлохын тулд шаардлагагүй хөрс хуулалт хийхээс завилаарай.</li>
         </ul>
     </div>
+
+    <!-- The Copyright and Course Label -->
+    <footer>
+        © ШУТИС ГУУС H.MIA350 Уурхайн төсөл зохиомж, төлөвлөлт хичээлийн семинар
+    </footer>
 
     <script>
         const ROWS = 12;
@@ -238,13 +258,12 @@
             document.getElementById('wallet').innerText = "$0k";
             document.getElementById('wallet').style.color = "#4caf50";
             document.getElementById('clock').innerText = "Жил 0";
-            document.getElementById('throughput').innerText = `0 / ${BLOCKS_PER_YEAR} блок`;
+            document.getElementById('throughput').innerText = "0 / 20 блок";
             document.getElementById('discount-display').innerText = "1.000";
             document.getElementById('message-box').innerText = "";
             document.getElementById('finalize-btn').disabled = false;
             document.getElementById('finalize-btn').style.opacity = "1";
             
-            // 1. Initialize base grid with standard waste (-25k value)
             for (let r = 0; r < ROWS; r++) {
                 gameState[r] = [];
                 for (let c = 0; c < COLS; c++) {
@@ -257,14 +276,10 @@
                 }
             }
 
-            // 2. Target high grade count strictly between 22 and 28 (23 to 27 inclusive)
             let targetHgCount = Math.floor(Math.random() * 5) + 23; 
             let hgCluster = [];
             
-            // Constraint 1: Randomly start high grade orebody within Bench 4 to 5 (Row index 4 or 5)
             let startRow = Math.floor(Math.random() * 2) + 4; 
-            
-            // Constraint 2: Maintain wall cushion gap buffer (Columns 5 to 14)
             let startCol = Math.floor(Math.random() * 8) + 6; 
             
             gameState[startRow][startCol].type = 'HG';
@@ -281,7 +296,6 @@
                 let newR = baseBlock.r + dir[0];
                 let newC = baseBlock.c + dir[1];
 
-                // Safeguards matrix boundaries while maintaining a strict 4-block cushion buffer on left/right walls
                 if (newR >= 3 && newR < ROWS && newC >= 4 && newC < (COLS - 4)) {
                     if (gameState[newR][newC].type === 'W') {
                         gameState[newR][newC].type = 'HG';
@@ -292,21 +306,17 @@
                 }
             }
 
-            // 3. Inject 3-6 Low Grade Blocks directly attached to or contained inside the HG Orebody
-            let attachedLgTarget = Math.floor(Math.random() * 4) + 3; // 3, 4, 5, or 6 blocks
+            let attachedLgTarget = Math.floor(Math.random() * 4) + 3; 
             let attachedLgCount = 0;
-            
-            // Gather all immediate valid empty border blocks neighboring the HG cluster
             let potentialBorderNeighbors = [];
-            let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            let borderDirections = [[-1, 0], [1, 0], [0, -1], [0, 1]];
             
             for (let hg of hgCluster) {
-                for (let dir of directions) {
+                for (let dir of borderDirections) {
                     let nR = hg.r + dir[0];
                     let nC = hg.c + dir[1];
                     if (nR >= 0 && nR < ROWS && nC >= 0 && nC < COLS) {
                         if (gameState[nR][nC].type === 'W') {
-                            // Avoid duplicate coordinates in our potential list
                             if (!potentialBorderNeighbors.some(b => b.r === nR && b.c === nC)) {
                                 potentialBorderNeighbors.push({r: nR, c: nC});
                             }
@@ -315,7 +325,6 @@
                 }
             }
 
-            // Directly transform targeted amount into attached low grade ores
             while (attachedLgCount < attachedLgTarget && potentialBorderNeighbors.length > 0) {
                 let randIndex = Math.floor(Math.random() * potentialBorderNeighbors.length);
                 let targetBlock = potentialBorderNeighbors.splice(randIndex, 1)[0];
@@ -326,13 +335,12 @@
                 attachedLgCount++;
             }
 
-            // Generate remaining peripheral Low Grade Halos to balance scenario variability up to 14 total
             let totalLgTargetCount = 14; 
             let currentLgCount = attachedLgCount;
             let lgSafetyCounter = 0;
             while (currentLgCount < totalLgTargetCount && lgSafetyCounter < 400) {
                 lgSafetyCounter++;
-                let r = Math.floor(Math.random() * 6) + 1; // Middle layout 
+                let r = Math.floor(Math.random() * 6) + 1; 
                 let c = Math.floor(Math.random() * COLS);
 
                 if (gameState[r][c].type === 'W') {
@@ -343,10 +351,7 @@
                 }
             }
 
-            // 4. Run background block sequence optimizer to find maximum target NPV
             calculateTheoreticalMaxNPV();
-
-            // 5. Render Grid UI
             renderGrid();
         }
 
@@ -390,7 +395,6 @@
 
             if (block.mined) return;
 
-            // Enforce Geotechnical 45-degree slope pit wall constraint
             if (r > 0) {
                 const parents = [c - 1, c, c + 1];
                 let blocked = false;
@@ -414,24 +418,20 @@
 
                 if (blocked) {
                     msgBox.innerText = "🛑 SLOPE VIOLATION: Secure the safe upper benches first!";
-                    msgBox.style.color = "#ef5350";
                     return;
                 }
             }
 
-            // Commit mining step
             block.mined = true;
             wallet += block.currentValue;
             
             blocksMinedThisYear++;
             totalBlocksMined++;
 
-            // Check if block milestone capacity advances the annual cycle
             if (blocksMinedThisYear === BLOCKS_PER_YEAR) {
                 currentYear++;
                 blocksMinedThisYear = 0;
 
-                // Advance compound time discounting on unmined blocks
                 let currentDiscountFactor = 1 / Math.pow(1 + DISCOUNT_RATE, currentYear);
                 
                 for (let row = 0; row < ROWS; row++) {
@@ -443,7 +443,6 @@
                 }
             }
 
-            // Update UI Dashboards
             document.getElementById('wallet').innerText = (wallet >= 0 ? `$${Math.round(wallet)}k` : `-$${Math.abs(Math.round(wallet))}k`);
             document.getElementById('wallet').style.color = wallet >= 0 ? "#4caf50" : "#ef5350";
             document.getElementById('clock').innerText = `Жил ${currentYear}`;
@@ -460,7 +459,6 @@
             return '#4e342e';
         }
 
-        // --- BACKGROUND NPV CLOSURE OPTIMIZER ENGINE ---
         function calculateTheoreticalMaxNPV() {
             let simGrid = [];
             for (let r = 0; r < ROWS; r++) {
@@ -553,7 +551,6 @@
             }
         }
 
-        // --- FINAL EVALUATION METHODS ---
         function finalizePit() {
             if (isFinalized) return;
             isFinalized = true;
@@ -580,16 +577,16 @@
             }
 
             if (efficiency >= 90) {
-                msgBox.innerText = `🏆 LANE АВАРГА! Efficiency: ${efficiency}%. Төлөвлөлтийг хангалттай сайн хийлээ!`;
+                msgBox.innerText = `🏆 Efficiency: ${efficiency}%. Төлөвлөлтийг хангалттай сайн хийлээ!`;
                 msgBox.style.color = "#66bb6a";
             } else if (efficiency >= 70) {
-                msgBox.innerText = `👍 ХАНГАЛТТАЙ ТӨЛӨВЛӨЛӨӨ. Efficiency: ${efficiency}%. Эхний жилүүдэд ядуу хүдэр дээр төвлөрснөөр баян агуулгатай хүдэр олборлолт цөөн жилээр хойшилсон байна.`;
+                msgBox.innerText = `👍 Efficiency: ${efficiency}%. Эхний жилүүдэд ядуу хүдэр дээр төвлөрчээ.`;
                 msgBox.style.color = "#81c784";
             } else if (efficiency >= 45) {
-                msgBox.innerText = `⚠️ ХУГАЦАА АЛДЛАА. Efficiency: ${efficiency}%. Дискаунтын улмаас гүнд буй баян хүдрийн үнэ цэнэ унасан байна.`;
+                msgBox.innerText = `⚠️ Efficiency: ${efficiency}%. Дискаунтын улмаас гүнд буй баян хүдрийн үнэ цэнэ унасан байна.`;
                 msgBox.style.color = "#ffb74d";
             } else {
-                msgBox.innerText = `🛑 БАЯЛАГ ҮНЭГҮЙДЛЭЭ. Efficiency: ${efficiency}%. Цаг хугацааны явцад нөөцийн үнэ цэнэ бүрэн алдагдлаа.`;
+                msgBox.innerText = `🛑 Efficiency: ${efficiency}%. Цаг хугацааны явцад нөөцийн үнэ цэнэ алдагдлаа.`;
                 msgBox.style.color = "#e57373";
             }
         }

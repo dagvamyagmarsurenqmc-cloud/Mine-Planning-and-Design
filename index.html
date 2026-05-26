@@ -259,15 +259,15 @@
 
             // 2. Generate High-Grade Core (Exactly 20 connected blocks)
             let hgCluster = [];
-            let startRow = Math.floor(Math.random() * 3) + 4; // Deep placement (Rows 4-9)
-            let startCol = Math.floor(Math.random() * 9) + 14; 
+            let startRow = Math.floor(Math.random() * 2) + 4; // Deep placement (Rows 4-9)
+            let startCol = Math.floor(Math.random() * 8) + 8; 
             
             gameState[startRow][startCol].type = 'HG';
             gameState[startRow][startCol].baseValue = 170;
             gameState[startRow][startCol].currentValue = 170;
             hgCluster.push({r: startRow, c: startCol});
 
-            while (hgCluster.length < 16) {
+            while (hgCluster.length < 22) {
                 let baseBlock = hgCluster[Math.floor(Math.random() * hgCluster.length)];
                 let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
                 let dir = directions[Math.floor(Math.random() * directions.length)];

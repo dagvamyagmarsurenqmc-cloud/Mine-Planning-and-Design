@@ -261,26 +261,28 @@
             let targetHgCount = Math.floor(Math.random() * 5) + 23; 
             let hgCluster = [];
             
-            // Constrain 1: Randomly start high grade orebody within Bench 4 to 5 (Row index 4 or 5)
+            // Constraint 1: Randomly start high grade orebody within Bench 4 to 5 (Row index 4 or 5)
             let startRow = Math.floor(Math.random() * 2) + 4; 
             
-            // Constrain 2: Ensure starting point is 3-4 blocks away from left/right walls (Col 4 to 12)
-            let startCol = Math.floor(Math.random() * 9) + 4; 
+            // Constraint 2: Ensure starting point is 4 blocks away from left/right walls (Col 4 to 15 safely)
+            let startCol = Math.floor(Math.random() * 8) + 6; 
             
             gameState[startRow][startCol].type = 'HG';
             gameState[startRow][startCol].baseValue = 170;
             gameState[startRow][startCol].currentValue = 170;
             hgCluster.push({r: startRow, c: startCol});
 
-            while (hgCluster.length < targetHgCount) {
+            let safetyLoopCount = 0;
+            while (hgCluster.length < targetHgCount && safetyLoopCount < 1000) {
+                safetyLoopCount++;
                 let baseBlock = hgCluster[Math.floor(Math.random() * hgCluster.length)];
                 let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
                 let dir = directions[Math.floor(Math.random() * directions.length)];
                 let newR = baseBlock.r + dir[0];
                 let newC = baseBlock.c + dir[1];
 
-                // Constrain cluster growth within grid bounds, honoring wall buffers for expansion stability
-                if (newR >= 3 && newR < ROWS && newC >= 3 && newC < (COLS - 3)) {
+                // Safeguards matrix boundaries while maintaining a strict 4-block cushion buffer on the left/right walls
+                if (newR >= 3 && newR < ROWS && newC >= 4 && newC < (COLS - 4)) {
                     if (gameState[newR][newC].type === 'W') {
                         gameState[newR][newC].type = 'HG';
                         gameState[newR][newC].baseValue = 170;
@@ -295,7 +297,7 @@
             let attachedLgCount = 0;
             let attempts = 0;
 
-            while (attachedLgCount < attachedLgTarget && attempts < 250) {
+            while (attachedLgCount < attachedLgTarget && attempts < 500) {
                 attempts++;
                 let baseBlock = hgCluster[Math.floor(Math.random() * hgCluster.length)];
                 let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
@@ -316,7 +318,9 @@
             // Generate remaining peripheral Low Grade Halos to balance scenario variability
             let totalLgTargetCount = 14; 
             let currentLgCount = attachedLgCount;
-            while (currentLgCount < totalLgTargetCount) {
+            let lgSafetyCounter = 0;
+            while (currentLgCount < totalLgTargetCount && lgSafetyCounter < 500) {
+                lgSafetyCounter++;
                 let r = Math.floor(Math.random() * 6) + 1; // Middle layout 
                 let c = Math.floor(Math.random() * COLS);
 
@@ -432,7 +436,7 @@
             document.getElementById('wallet').innerText = (wallet >= 0 ? `$${Math.round(wallet)}k` : `-$${Math.abs(Math.round(wallet))}k`);
             document.getElementById('wallet').style.color = wallet >= 0 ? "#4caf50" : "#ef5350";
             document.getElementById('clock').innerText = `Жил ${currentYear}`;
-            document.getElementById('throughput').innerText = `${blocksMinedThisYear} / ${BLOCKS_PER_YEAR} блок`;
+            document.getElementById('throughput').innerText = `${blocksMinedThisYear} / ${BLOCKS_PER_YEAR} block`;
             document.getElementById('discount-display').innerText = (1 / Math.pow(1 + DISCOUNT_RATE, currentYear)).toFixed(3);
 
             renderGrid();

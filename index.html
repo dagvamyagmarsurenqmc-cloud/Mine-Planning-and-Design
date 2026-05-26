@@ -264,7 +264,7 @@
             // Constraint 1: Randomly start high grade orebody within Bench 4 to 5 (Row index 4 or 5)
             let startRow = Math.floor(Math.random() * 2) + 4; 
             
-            // Constraint 2: Ensure starting point is 4 blocks away from left/right walls (Col 4 to 15 safely)
+            // Constraint 2: Maintain wall cushion gap buffer (Columns 5 to 14)
             let startCol = Math.floor(Math.random() * 8) + 6; 
             
             gameState[startRow][startCol].type = 'HG';
@@ -273,7 +273,7 @@
             hgCluster.push({r: startRow, c: startCol});
 
             let safetyLoopCount = 0;
-            while (hgCluster.length < targetHgCount && safetyLoopCount < 1000) {
+            while (hgCluster.length < targetHgCount && safetyLoopCount < 800) {
                 safetyLoopCount++;
                 let baseBlock = hgCluster[Math.floor(Math.random() * hgCluster.length)];
                 let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
@@ -281,7 +281,7 @@
                 let newR = baseBlock.r + dir[0];
                 let newC = baseBlock.c + dir[1];
 
-                // Safeguards matrix boundaries while maintaining a strict 4-block cushion buffer on the left/right walls
+                // Safeguards matrix boundaries while maintaining a strict 4-block cushion buffer on left/right walls
                 if (newR >= 3 && newR < ROWS && newC >= 4 && newC < (COLS - 4)) {
                     if (gameState[newR][newC].type === 'W') {
                         gameState[newR][newC].type = 'HG';
@@ -295,31 +295,42 @@
             // 3. Inject 3-6 Low Grade Blocks directly attached to or contained inside the HG Orebody
             let attachedLgTarget = Math.floor(Math.random() * 4) + 3; // 3, 4, 5, or 6 blocks
             let attachedLgCount = 0;
-            let attempts = 0;
-
-            while (attachedLgCount < attachedLgTarget && attempts < 500) {
-                attempts++;
-                let baseBlock = hgCluster[Math.floor(Math.random() * hgCluster.length)];
-                let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
-                let dir = directions[Math.floor(Math.random() * directions.length)];
-                let newR = baseBlock.r + dir[0];
-                let newC = baseBlock.c + dir[1];
-
-                if (newR >= 0 && newR < ROWS && newC >= 0 && newC < COLS) {
-                    if (gameState[newR][newC].type === 'W') {
-                        gameState[newR][newC].type = 'LG';
-                        gameState[newR][newC].baseValue = 55;
-                        gameState[newR][newC].currentValue = 55;
-                        attachedLgCount++;
+            
+            // Gather all immediate valid empty border blocks neighboring the HG cluster
+            let potentialBorderNeighbors = [];
+            let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+            
+            for (let hg of hgCluster) {
+                for (let dir of directions) {
+                    let nR = hg.r + dir[0];
+                    let nC = hg.c + dir[1];
+                    if (nR >= 0 && nR < ROWS && nC >= 0 && nC < COLS) {
+                        if (gameState[nR][nC].type === 'W') {
+                            // Avoid duplicate coordinates in our potential list
+                            if (!potentialBorderNeighbors.some(b => b.r === nR && b.c === nC)) {
+                                potentialBorderNeighbors.push({r: nR, c: nC});
+                            }
+                        }
                     }
                 }
             }
 
-            // Generate remaining peripheral Low Grade Halos to balance scenario variability
+            // Directly transform targeted amount into attached low grade ores
+            while (attachedLgCount < attachedLgTarget && potentialBorderNeighbors.length > 0) {
+                let randIndex = Math.floor(Math.random() * potentialBorderNeighbors.length);
+                let targetBlock = potentialBorderNeighbors.splice(randIndex, 1)[0];
+                
+                gameState[targetBlock.r][targetBlock.c].type = 'LG';
+                gameState[targetBlock.r][targetBlock.c].baseValue = 55;
+                gameState[targetBlock.r][targetBlock.c].currentValue = 55;
+                attachedLgCount++;
+            }
+
+            // Generate remaining peripheral Low Grade Halos to balance scenario variability up to 14 total
             let totalLgTargetCount = 14; 
             let currentLgCount = attachedLgCount;
             let lgSafetyCounter = 0;
-            while (currentLgCount < totalLgTargetCount && lgSafetyCounter < 500) {
+            while (currentLgCount < totalLgTargetCount && lgSafetyCounter < 400) {
                 lgSafetyCounter++;
                 let r = Math.floor(Math.random() * 6) + 1; // Middle layout 
                 let c = Math.floor(Math.random() * COLS);
@@ -436,7 +447,7 @@
             document.getElementById('wallet').innerText = (wallet >= 0 ? `$${Math.round(wallet)}k` : `-$${Math.abs(Math.round(wallet))}k`);
             document.getElementById('wallet').style.color = wallet >= 0 ? "#4caf50" : "#ef5350";
             document.getElementById('clock').innerText = `Жил ${currentYear}`;
-            document.getElementById('throughput').innerText = `${blocksMinedThisYear} / ${BLOCKS_PER_YEAR} block`;
+            document.getElementById('throughput').innerText = `${blocksMinedThisYear} / ${BLOCKS_PER_YEAR} блок`;
             document.getElementById('discount-display').innerText = (1 / Math.pow(1 + DISCOUNT_RATE, currentYear)).toFixed(3);
 
             renderGrid();

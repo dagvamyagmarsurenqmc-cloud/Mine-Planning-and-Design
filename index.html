@@ -257,17 +257,20 @@
                 }
             }
 
-            // 2. Generate High-Grade Core (Exactly 20 connected blocks)
+            // 2. Generate High-Grade Core (Randomly between 23 and 27 blocks)
             let hgCluster = [];
-            let startRow = Math.floor(Math.random() * 2) + 4; // Deep placement (Rows 4-9)
-            let startCol = Math.floor(Math.random() * 8) + 8; 
+            let startRow = Math.floor(Math.random() * 3) + 6; // Deep placement (Rows 6-9)
+            let startCol = Math.floor(Math.random() * 8) + 6; 
             
             gameState[startRow][startCol].type = 'HG';
             gameState[startRow][startCol].baseValue = 170;
             gameState[startRow][startCol].currentValue = 170;
             hgCluster.push({r: startRow, c: startCol});
 
-            while (hgCluster.length < 22) {
+            // Calculate a random target size between 23 and 27 (exclusive of 22 and 28)
+            let targetHgCount = Math.floor(Math.random() * 5) + 23; 
+
+            while (hgCluster.length < targetHgCount) {
                 let baseBlock = hgCluster[Math.floor(Math.random() * hgCluster.length)];
                 let directions = [[-1, 0], [1, 0], [0, -1], [0, 1]]; 
                 let dir = directions[Math.floor(Math.random() * directions.length)];
@@ -536,16 +539,16 @@
             }
 
             if (efficiency >= 90) {
-                msgBox.innerText = `🏆 LANE АВАРГА! Efficiency: ${efficiency}%. Төлөвлөлтийг хангалттай сайн хийлээ!`;
+                msgBox.innerText = `🏆 LANE'S CHAMPION! Efficiency: ${efficiency}%. Төлөвлөлтийг хангалттай сайн хийлээ!`;
                 msgBox.style.color = "#66bb6a";
             } else if (efficiency >= 70) {
-                msgBox.innerText = `👍 ХАНГАЛТТАЙ САЙН. Efficiency: ${efficiency}%. Эхний жилүүдэд ядуу хүдэр дээр төвлөрснөөр баян агуулгатай хүдэр олборлолт цөөн жилээр хойшилсон байна.`;
+                msgBox.innerText = `👍 DECENT SEQUENCE. Efficiency: ${efficiency}%. Эхний жилүүдэд ядуу хүдэр дээр төвлөрснөөр баян агуулгатай хүдэр олборлолт цөөн жилээр хойшилсон байна.`;
                 msgBox.style.color = "#81c784";
             } else if (efficiency >= 45) {
-                msgBox.innerText = `⚠️ ОЛБОРЛОЛТ ОРОЙТСОН. Efficiency: ${efficiency}%. Дискаунтын улмаас гүнд буй баян хүдрийн үнэ цэнэ унасан байна.`;
+                msgBox.innerText = `⚠️ PRODUCTION DELAY. Efficiency: ${efficiency}%. Дискаунтын улмаас гүнд буй баян хүдрийн үнэ цэнэ унасан байна.`;
                 msgBox.style.color = "#ffb74d";
             } else {
-                msgBox.innerText = `🛑 ОРД ҮНЭГҮЙДСЭН. Efficiency: ${efficiency}%. Цаг хугацааны явцад нөөцийн үнэ цэнэ бүрэн алдагдлаа.`;
+                msgBox.innerText = `🛑 ASSET DEPRECIATION. Efficiency: ${efficiency}%. Цаг хугацааны явцад нөөцийн үнэ цэнэ бүрэн алдагдлаа.`;
                 msgBox.style.color = "#e57373";
             }
         }
